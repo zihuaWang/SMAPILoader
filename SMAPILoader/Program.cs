@@ -1,29 +1,13 @@
 using System.Reflection;
+namespace SMAPILoader;
 
-namespace SMAPILoaderDLL;
-//[HarmonyPatch]
-//static class MainActivityPatcher
-//{
-//    [HarmonyPrefix]
-//    [HarmonyPatch(typeof(StardewValley.MainActivity), "OnCreatePartTwo")]
-//    static void PrefixOnCreatePartTwo()
-//    {
-//        Android.Util.Log.Debug("SMAPI-Tag", "On PrefixOnCreatePartTwo");
-//    }
-//    [HarmonyPostfix]
-//    [HarmonyPatch(typeof(StardewValley.MainActivity), "OnCreatePartTwo")]
-//    static void PostFixOnCreatePartTwo()
-//    {
-//        Android.Util.Log.Debug("SMAPI-Tag", "On PostFixOnCreatePartTwo");
-//    }
-//}
 public static class Program
 {
     public static void Log(object msg)
     {
         Android.Util.Log.Debug("SMAPI-Tag", msg?.ToString());
     }
-    public static void Start()
+    public static void StartSMAPI()
     {
         Android.Util.Log.Debug("SMAPI-Tag", "Starting SMAPI Loader DLL...");
 
@@ -39,15 +23,12 @@ public static class Program
 
         Android.Util.Log.Debug("SMAPI-Tag", "Successfully Start SMAPI Loader");
     }
-
     static void StartInternal()
     {
-        var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Log("current dir: " + currentDir);
-        var coreLib = Assembly.LoadFrom(currentDir + "/System.Private.CoreLib.dll");
-        coreLib.GetType("");
         AppDomain.CurrentDomain.TypeResolve += CurrentDomain_TypeResolve;
         AppDomain.CurrentDomain.AssemblyResolve += AppDomain_AssemblyResolve;
+        var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        Log("current dir: " + currentDir);
     }
 
     private static Assembly? CurrentDomain_TypeResolve(object? sender, ResolveEventArgs args)

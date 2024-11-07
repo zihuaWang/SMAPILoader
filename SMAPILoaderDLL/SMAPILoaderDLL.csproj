@@ -9,4 +9,12 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call &quot;$(ProjectDir)post-build.cmd&quot;&#xA;" />
   </Target>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\..\..\assemblies original\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="StardewValley">
+      <HintPath>..\..\..\assemblies original\StardewValley.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
