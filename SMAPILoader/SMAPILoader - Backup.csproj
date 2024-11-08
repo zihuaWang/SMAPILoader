@@ -9,6 +9,6 @@
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call &quot;$(ProjectDir)post.cmd&quot;" />
+    <Exec Command="call $(ProjectDir)post.cmd" />
   </Target>
 </Project>

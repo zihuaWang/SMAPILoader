@@ -15,9 +15,12 @@ namespace FakeStardewGame
     {
         protected override void OnCreate(Android.OS.Bundle bundle)
         {
+            instance = this;
+
             try
             {
-                SMAPILoader.Program.StartSMAPI();
+                var smapiLoaderAsm = Assembly.LoadFrom(ApplicationContext.GetExternalFilesDir(null) + "/SMAPILoader.dll");
+                smapiLoaderAsm.GetType("SMAPILoader.Program").GetMethod("Start", BindingFlags.Static | BindingFlags.Public).Invoke(null, null);
             }
             catch (Exception e)
             {

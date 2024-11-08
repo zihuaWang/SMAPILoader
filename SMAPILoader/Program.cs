@@ -7,7 +7,7 @@ public static class Program
     {
         Android.Util.Log.Debug("SMAPI-Tag", msg?.ToString());
     }
-    public static void StartSMAPI()
+    public static void Start()
     {
         Android.Util.Log.Debug("SMAPI-Tag", "Starting SMAPI Loader DLL...");
 
@@ -29,11 +29,15 @@ public static class Program
         AppDomain.CurrentDomain.AssemblyResolve += AppDomain_AssemblyResolve;
         var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         Log("current dir: " + currentDir);
+        var smapiAsm = Assembly.LoadFrom(currentDir + "/StardewModdingAPI.dll");
+        var program = smapiAsm.GetType("StardewModdingAPI.Program");
+        var program_Main = program.GetMethod("StartFromSMAPILoader", BindingFlags.Static | BindingFlags.Public);
+        program_Main.Invoke(null, []);
     }
 
     private static Assembly? CurrentDomain_TypeResolve(object? sender, ResolveEventArgs args)
     {
-        Log("on type resolve");
+        Log("on type resolve: " + args.Name);
         return null;
     }
 
