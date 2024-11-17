@@ -25,19 +25,19 @@ internal static class GameAssetTool
     {
         Console.WriteLine("Prefix try open stream: " + name);
     }
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(ContentManager), "OpenStream")]
-    static void Prefix_CMOpenStream(string name)
-    {
-        Console.WriteLine("Prefix try CM open stream: " + name);
-    }
+    //[HarmonyPrefix]
+    //[HarmonyPatch(typeof(ContentManager), "OpenStream")]
+    //static void Prefix_CMOpenStream(string name)
+    //{
+    //    Console.WriteLine("Prefix try CM open stream: " + name);
+    //}
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(Game1), "CreateContentManager")]
-    static void PrefixCreateContentManager(IServiceProvider serviceProvider, string rootDirectory)
-    {
-        Console.WriteLine("On PrefixCreateContentManager");
-    }
+    //[HarmonyPrefix]
+    //[HarmonyPatch(typeof(Game1), "CreateContentManager")]
+    //static void PrefixCreateContentManager(IServiceProvider serviceProvider, string rootDirectory)
+    //{
+    //    Console.WriteLine("On PrefixCreateContentManager");
+    //}
 
     public static void VerifyAssets()
     {

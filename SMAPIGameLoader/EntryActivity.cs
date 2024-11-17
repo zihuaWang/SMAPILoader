@@ -31,8 +31,8 @@ internal class EntryActivity : Activity
         //    Console.WriteLine("already loaded in ctor: " + asm);
         //}
 
-        AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-        AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
+        //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        //AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
     }
 
     private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)

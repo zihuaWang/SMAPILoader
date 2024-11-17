@@ -33,14 +33,14 @@ public class SMAPIActivity : AndroidGameActivity
 {
     static SMAPIActivity()
     {
-        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        foreach (var asm in assemblies)
-        {
-            Console.WriteLine("already loaded in ctor: " + asm);
-        }
+        //Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        //foreach (var asm in assemblies)
+        //{
+        //    Console.WriteLine("already loaded in ctor: " + asm);
+        //}
 
         AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-        AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
+        //AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
 
     }
     public static SMAPIActivity Instance { get; private set; }
@@ -57,11 +57,6 @@ public class SMAPIActivity : AndroidGameActivity
         {
             Finish();
             return;
-        }
-        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        foreach (var asm in assemblies)
-        {
-            Console.WriteLine("already loaded in OnCreate(): " + asm);
         }
 
         LaunchGame();
@@ -279,15 +274,27 @@ public class SMAPIActivity : AndroidGameActivity
         SetupDisplaySettings();
         SetPaddingForMenus();
         //setup SMAPI & SGameRunner
-        //GameAssetTool.SetupLoadAssetPath();
+        //GameAssetTool.SetupLoadAssetPathHook();
         const bool isRunSMAPI = true;
+        Console.WriteLine("isRunWith SMAPI?: " + isRunSMAPI);
         if (isRunSMAPI)
         {
-            //Program.Main([]);
             var smapi = Assembly.LoadFrom(ExternalFilesDir + "/StardewModdingAPI.dll");
+            Console.WriteLine(smapi);
             var programType = smapi.GetType("StardewModdingAPI.Program");
+            Console.WriteLine(programType);
             var mainMethod = programType.GetMethod("Main", BindingFlags.Static | BindingFlags.Public);
-            mainMethod.Invoke(null, null);
+            Console.WriteLine(mainMethod);
+            var args = new object[] { new string[] { } };
+            try
+            {
+                mainMethod.Invoke(null, args);
+                Console.WriteLine("done run SMAPI Program.Main()");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
         else
         {
@@ -296,7 +303,17 @@ public class SMAPIActivity : AndroidGameActivity
         }
 
         SetContentView((View)GameRunner.instance.Services.GetService(typeof(View)));
-        GameRunner.instance.Run();
+        Console.WriteLine("done set content view");
+        Console.WriteLine("try run Game Runner: " + GameRunner.instance);
+        try
+        {
+            GameRunner.instance.Run();
+            Console.WriteLine("done GameRunner.Run()");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
     public int GetBuild()
     {
