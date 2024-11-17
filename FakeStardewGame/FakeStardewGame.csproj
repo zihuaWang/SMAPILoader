@@ -8,20 +8,24 @@
 		<LangVersion>latest</LangVersion>
 		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
 		<BundleAssemblies>false</BundleAssemblies>
-
 	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
 		<RunAOTCompilation>False</RunAOTCompilation>
 		<AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 		<PublishTrimmed>False</PublishTrimmed>
 		<IsTrimmable>False</IsTrimmable>
+		<EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+		<BundleAssemblies>False</BundleAssemblies>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 		<IsTrimmable>False</IsTrimmable>
 		<PublishTrimmed>False</PublishTrimmed>
 		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
 	</PropertyGroup>
 	<ItemGroup>
 		<AndroidJavaSource Remove="assets\**" />
@@ -35,16 +39,24 @@
 		<TransformFile Remove="assets\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.2.1105" />
-		<PackageReference Include="MonoGame.Framework.Android" Version="3.8.2.1105" />
+	  <Compile Include="AndroidManifest.xml" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="SkiaSharp" Version="2.88.9" />
 		<PackageReference Include="Xamarin.AndroidX.DocumentFile" Version="1.0.1.29" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Reference Include="MonoGame.Framework">
+	    <HintPath>..\..\..\Apks Latest File\assemblies\out\MonoGame.Framework.dll</HintPath>
+	    <Private>False</Private>
+	  </Reference>
 	  <Reference Include="StardewValley">
-	    <HintPath>..\..\..\assemblies-reference-for-smapi\StardewValley.dll</HintPath>
+	    <HintPath>..\..\..\Apks Latest File\assemblies\out\StardewValley.dll</HintPath>
+	    <Private>False</Private>
 	  </Reference>
 	  <Reference Include="StardewValley.GameData">
-	    <HintPath>..\..\..\assemblies-reference-for-smapi\StardewValley.GameData.dll</HintPath>
+	    <HintPath>..\..\..\Apks Latest File\assemblies\out\StardewValley.GameData.dll</HintPath>
+	    <Private>False</Private>
 	  </Reference>
 	</ItemGroup>
 	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
