@@ -21,10 +21,40 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Mono.Cecil" Version="0.11.6" />
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
-		<PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
+		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<Reference Include="0Harmony">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\build\android\0Harmony.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
+		<Reference Include="MonoGame.Framework">
+		  <HintPath>..\..\..\Apks Latest File\assemblies\out\MonoGame.Framework.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoMod.Backports">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\src\SMAPI\bin\ARM64\Android Release\MonoMod.Backports.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
+		<Reference Include="MonoMod.Core">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\src\SMAPI\bin\ARM64\Android Release\MonoMod.Core.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
+		<Reference Include="MonoMod.Iced">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\src\SMAPI\bin\ARM64\Android Release\MonoMod.Iced.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
+		<Reference Include="MonoMod.ILHelpers">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\src\SMAPI\bin\ARM64\Android Release\MonoMod.ILHelpers.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
+		<Reference Include="MonoMod.RuntimeDetour">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\src\SMAPI\bin\ARM64\Android Release\MonoMod.RuntimeDetour.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
+		<Reference Include="MonoMod.Utils">
+		  <HintPath>..\..\..\..\SMAPI-Android-1.6\src\SMAPI\bin\ARM64\Android Release\MonoMod.Utils.dll</HintPath>
+		  <Private>True</Private>
+		</Reference>
 		<Reference Include="StardewValley">
 			<HintPath>..\..\..\Apks Latest File\assemblies\out\StardewValley.dll</HintPath>
 			<Private>False</Private>

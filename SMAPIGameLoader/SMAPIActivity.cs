@@ -31,7 +31,7 @@ namespace SMAPIGameLoader;
         | ConfigChanges.UiMode))]
 public class SMAPIActivity : AndroidGameActivity
 {
-    public SMAPIActivity()
+    static SMAPIActivity()
     {
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var asm in assemblies)
@@ -52,6 +52,7 @@ public class SMAPIActivity : AndroidGameActivity
     {
         Instance = this;
         currentBundle = bundle;
+        FileTool.Init(this);
         if (!ApkTool.IsInstalled)
         {
             Finish();
@@ -86,6 +87,7 @@ public class SMAPIActivity : AndroidGameActivity
         PrepareDll();
 
         //copy game content assets
+        GameAssetTool.VerifyAssets();
 
         //setup Activity
         IntegrateStardewMainActivity();
@@ -277,11 +279,15 @@ public class SMAPIActivity : AndroidGameActivity
         SetupDisplaySettings();
         SetPaddingForMenus();
         //setup SMAPI & SGameRunner
-        bool isRunSMAPI = false;
+        //GameAssetTool.SetupLoadAssetPath();
+        const bool isRunSMAPI = true;
         if (isRunSMAPI)
         {
             //Program.Main([]);
-            //var gameRunner = GameRunner.instance;
+            var smapi = Assembly.LoadFrom(ExternalFilesDir + "/StardewModdingAPI.dll");
+            var programType = smapi.GetType("StardewModdingAPI.Program");
+            var mainMethod = programType.GetMethod("Main", BindingFlags.Static | BindingFlags.Public);
+            mainMethod.Invoke(null, null);
         }
         else
         {
