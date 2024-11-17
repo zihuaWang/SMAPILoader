@@ -20,7 +20,7 @@
 		<AndroidUseAssemblyStore>false</AndroidUseAssemblyStore>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Mono.Cecil" Version="0.11.5" />
+		<PackageReference Include="Mono.Cecil" Version="0.11.6" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
 	</ItemGroup>

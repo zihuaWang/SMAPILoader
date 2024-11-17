@@ -24,8 +24,4 @@
 		<Debugger>Xamarin</Debugger>
 		<Optimize>False</Optimize>
 	</PropertyGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\MonoMod Android\MonoMod-Android-Arm64\src\MonoMod.Core\MonoMod.Core.csproj" />
-		<ProjectReference Include="..\..\..\..\MonoMod Android\MonoMod-Android-Arm64\src\MonoMod.RuntimeDetour\MonoMod.RuntimeDetour.csproj" />
-	</ItemGroup>
 </Project>

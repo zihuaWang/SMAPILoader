@@ -10,6 +10,8 @@ internal class CustomResolver : BaseAssemblyResolver
     public CustomResolver()
     {
         _defaultResolver = new DefaultAssemblyResolver();
+        foreach (var dirPath in SMAPIActivity.GetDependenciesDirectorySearch)
+            _defaultResolver.AddSearchDirectory(dirPath);
     }
 
     public override AssemblyDefinition Resolve(AssemblyNameReference name)
@@ -21,10 +23,7 @@ internal class CustomResolver : BaseAssemblyResolver
         }
         catch (AssemblyResolutionException ex)
         {
-            var loadPath = SMAPIActivity.ExternalFilesDir + "/" + name.Name + ".dll";
-            Console.WriteLine("try resolve manual path: " + loadPath);
-            assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly(loadPath);
-            Console.WriteLine("loading assembly: " + assembly);
+            Console.WriteLine(ex);
         }
         return assembly;
     }

@@ -34,49 +34,101 @@ public class SMAPIActivity : AndroidGameActivity
 {
     public SMAPIActivity()
     {
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var asm in assemblies)
+        {
+            Console.WriteLine("already loaded in ctor: " + asm);
+        }
+
         AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
+
     }
     public static SMAPIActivity Instance { get; private set; }
     public static string ExternalFilesDir => Instance.ApplicationContext.GetExternalFilesDir(null).AbsolutePath;
 
+    Bundle currentBundle;
+    public string getStardewDllFilePath => ExternalFilesDir + "/StardewValley.dll";
     protected override void OnCreate(Bundle bundle)
     {
-        //setup sdk
         Instance = this;
-        var asm = LoadDllExternal("StardewValley.dll");
-
-        //launch game
-
+        currentBundle = bundle;
         if (!ApkTool.IsInstalled)
+        {
+            Finish();
             return;
-        LaunchGame(bundle);
+        }
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var asm in assemblies)
+        {
+            Console.WriteLine("already loaded in OnCreate(): " + asm);
+        }
+
+        LaunchGame();
     }
-    void LaunchGame(Bundle bundle)
+    void PrepareDll()
     {
         //fix assembly first
-        MainActivityRewriter.Rewrite(ExternalFilesDir + "/StardewValley.dll");
+        var stardewDllFilePath = ExternalFilesDir + "/StardewValley.dll";
+        MainActivityRewriter.Rewrite(stardewDllFilePath, out var isRewrite);
+        if (isRewrite)
+        {
+            //exit app & new load dll again
+            Finish();
+        }
+        Console.WriteLine("done setup dll references");
+        //fix bug can't load or assembly 
+        Assembly.LoadFrom(getStardewDllFilePath);
+    }
+    //Assembly stardewAssembly;
+    void LaunchGame()
+    {
+        //prepare references
+        PrepareDll();
 
-        //setup dll refere first
-        var localAppDir = ApplicationContext.DataDir.AbsolutePath;
-        var stardewDllFilePath = Path.Combine(localAppDir, "StardewValley.dll");
-        File.Copy(Path.Combine(ExternalFilesDir, "StardewValley.dll"), stardewDllFilePath, true);
+        //copy game content assets
 
-        //copy dll & game asset
-
-        //edit class & method for MainActivity
-        //MainActivityRewriter.Rewrite(ExternalFilesDir +"/StardewValley.dll");
+        //setup Activity
+        IntegrateStardewMainActivity();
 
         //ready
-        SV_OnCreate(bundle);
+        SV_OnCreate();
     }
-    static Assembly LoadDllExternal(string relativePath)
+    void IntegrateStardewMainActivity()
     {
-        return Assembly.LoadFrom(Path.Combine(ExternalFilesDir, relativePath));
+        var instance_Field = typeof(MainActivity).GetField("instance", BindingFlags.Static | BindingFlags.Public);
+        instance_Field.SetValue(null, this);
+        Console.WriteLine("done setup MainActivity.instance with: " + instance_Field.GetValue(null));
+
+    }
+    static string[] _dependenciesDirectorySearch;
+    public static string[] GetDependenciesDirectorySearch
+    {
+        get
+        {
+            if (_dependenciesDirectorySearch == null)
+            {
+                _dependenciesDirectorySearch = [
+                       ExternalFilesDir,
+                ];
+            }
+            return _dependenciesDirectorySearch;
+        }
     }
     static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
     {
-        Console.WriteLine("try solve asm: " + args.Name);
+        Console.WriteLine("try resolve assembly name: " + args.Name);
+        //manual load at external files dir
+        string assemblyName = new AssemblyName(args.Name).Name;
+        var dllFileName = assemblyName + ".dll";
+        foreach (var dir in GetDependenciesDirectorySearch)
+        {
+            var asm = Assembly.LoadFrom(Path.Combine(dir, dllFileName));
+            if (asm != null)
+                return asm;
+
+        }
+        Console.WriteLine("error can't resolve asm: " + args.Name);
         return null;
     }
     static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
@@ -85,10 +137,9 @@ public class SMAPIActivity : AndroidGameActivity
     }
 
 
-    //stardew valley methods & field accesstor
-    void SV_OnCreate(Bundle bundle)
+    void SV_OnCreate()
     {
-        //Log.It("MainActivity.OnCreate");
+        Log.It("MainActivity.OnCreate");
         RequestWindowFeature(WindowFeatures.NoTitle);
         if (Build.VERSION.SdkInt >= BuildVersionCodes.P)
         {
@@ -96,7 +147,7 @@ public class SMAPIActivity : AndroidGameActivity
         }
         Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
         Window.SetFlags(WindowManagerFlags.KeepScreenOn, WindowManagerFlags.KeepScreenOn);
-        base.OnCreate(bundle);
+        base.OnCreate(currentBundle);
         CheckAppPermissions();
     }
     public void LogPermissions()
@@ -279,7 +330,10 @@ public class SMAPIActivity : AndroidGameActivity
     //MobileDisplay
     public static void SetupDisplaySettings()
     {
-        MainActivity instance = MainActivity.instance;
+        var MobileDisplayType = typeof(MainActivity).Assembly.GetType("StardewValley.Mobile.MobileDisplay");
+        MobileDisplayType.GetMethod("SetupDisplaySettings", BindingFlags.Static | BindingFlags.Public).Invoke(null, null);
+        return;
+        SMAPIActivity instance = SMAPIActivity.Instance;
         Display defaultDisplay = instance.WindowManager.DefaultDisplay;
         Android.Graphics.Point point = new();
         defaultDisplay.GetRealSize(point);
@@ -287,7 +341,6 @@ public class SMAPIActivity : AndroidGameActivity
         int y = point.Y;
         DisplayMetrics displayMetrics = instance.Resources.DisplayMetrics;
         int ppi = Math.Max((int)displayMetrics.DensityDpi, Math.Max((int)displayMetrics.Xdpi, (int)displayMetrics.Ydpi));
-        var MobileDisplayType = typeof(MainActivity).Assembly.GetType("StardewValley.MobileDisplay");
         MobileDisplayType.GetMethod("Android_SetDisplaySettings",
             BindingFlags.Public | BindingFlags.Static).Invoke(null, new object[] { x, y, ppi, 0 });
         PrintInfo(null, x, y, ppi);

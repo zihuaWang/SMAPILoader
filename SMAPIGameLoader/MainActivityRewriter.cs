@@ -24,30 +24,28 @@ internal static class MainActivityRewriter
         return ModuleDefinition.ReadModule(stream, MonoCecilReaderConfig);
     }
     public static string ExternalFilesDir => SMAPIActivity.ExternalFilesDir;
-    public static void Rewrite(string stardewDllFilePath)
+    public static void Rewrite(string stardewDllFilePath, out bool isRewrite)
     {
-        var stardewDllStream = File.Open(stardewDllFilePath, FileMode.Open, FileAccess.ReadWrite);
+        isRewrite = false;
+        using var stardewDllStream = File.Open(stardewDllFilePath, FileMode.Open, FileAccess.ReadWrite);
         var stardewModule = ReadModule(stardewDllStream);
-
         try
         {
             var mainActivityTypeDef = stardewModule.Types.First(t => t.Name == "MainActivity");
             var instance_FieldDef = mainActivityTypeDef.Fields.First(f => f.Name == "instance");
-            //change DeclaringType MainActivity instance to SMAPIActivity instance;
-            if (instance_FieldDef.DeclaringType.Name != typeof(SMAPIActivity).Name)
+            //change FieldType MainActivity to SMAPIActivity;
+            if (instance_FieldDef.FieldType.Name != typeof(SMAPIActivity).Name)
             {
-                var importedSmapiActivityType = stardewModule.ImportReference(typeof(SMAPIActivity)).Resolve();
-                importedSmapiActivityType.IsImport = true;
-                instance_FieldDef.DeclaringType = importedSmapiActivityType;
-
-                Console.WriteLine("done replace declaring MainActivity.instance to SMAPIActivity.instance");
+                instance_FieldDef.FieldType = stardewModule.ImportReference(typeof(SMAPIActivity));
+                Console.WriteLine("done change field type MainActivity to SMAPIActivity");
+                stardewModule.Write();
+                isRewrite = true;
+                Console.WriteLine("Successfully Rewrite StardewValley.dll");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-        //var newModuleSaveFilePath = SMAPIActivity.ExternalFilesDir + "/StardewValley-New.dll";
-        stardewModule.Write();
     }
 }
