@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0" package="com.abc.stardew" android:versionCode="1">
-	<application android:allowBackup="true" android:supportsRtl="true" android:label="Fake Stardew SMAPI " android:icon="@mipmap/appicon"></application>
-	<uses-permission android:name="android.permission.INTERNET" />
-</manifest>

@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Text;
 using Android.Util;
 using Android.Views;
+using HarmonyLib;
 using Java.Util;
 using Microsoft.Xna.Framework;
 using StardewValley;
@@ -73,9 +74,11 @@ public class SMAPIActivity : AndroidGameActivity
     //Assembly stardewAssembly;
     void LaunchGame()
     {
-        //prepare game assets
+        //setup refernces assemblies
         PrepareAssemblies();
         PrepareAssets();
+
+        //ready to use all assemblies
 
         //setup Activity
         IntegrateStardewMainActivity();
@@ -88,7 +91,7 @@ public class SMAPIActivity : AndroidGameActivity
         var instance_Field = typeof(MainActivity).GetField("instance", BindingFlags.Static | BindingFlags.Public);
         instance_Field.SetValue(null, this);
         Console.WriteLine("done setup MainActivity.instance with: " + instance_Field.GetValue(null));
-
+        MainActivityPatcher.Apply();
     }
     static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
     {
@@ -164,6 +167,11 @@ public class SMAPIActivity : AndroidGameActivity
         {
             Window.DecorView.SystemUiVisibility = (StatusBarVisibility)5894;
         }
+    }
+    public bool CheckStorageMigration()
+    {
+        Console.WriteLine("Bypass Farm Migration");
+        return false;
     }
 
     public void LogPermissions()
