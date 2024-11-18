@@ -64,7 +64,8 @@ public class SMAPIActivity : AndroidGameActivity
     }
     void PrepareDll()
     {
-        //fix assembly first
+        GameDLLTool.VerifyDLL();
+        //fix load stardew valley assembly first & prevent error StardewValley.dll file not found
         var stardewDllFilePath = ExternalFilesDir + "/StardewValley.dll";
         MainActivityRewriter.Rewrite(stardewDllFilePath, out var isRewrite);
         if (isRewrite)
