@@ -12,11 +12,6 @@ namespace SMAPIGameLoader;
 [HarmonyPatch]
 static class GameAssetTool
 {
-    public static void SetupLoadAssetPathHook()
-    {
-        Console.WriteLine("done harmony patch all");
-    }
-
     [HarmonyPrefix]
     [HarmonyPatch(typeof(TitleContainer), nameof(TitleContainer.OpenStream))]
     static bool PrefixOpenStream(ref Stream __result, string name)
@@ -52,25 +47,6 @@ static class GameAssetTool
         }
     }
 
-    //[HarmonyPrefix]
-    //[HarmonyPatch(typeof(GameAssetTool), nameof(VerifyAssets))]
-    //static void PrefixVerifyAssets()
-    //{
-    //    Console.WriteLine("on prefix verify asset");
-    //}
-    //[HarmonyPrefix]
-    //[HarmonyPatch(typeof(ContentManager), "OpenStream")]
-    //static void Prefix_CMOpenStream(string name)
-    //{
-    //    Console.WriteLine("Prefix try CM open stream: " + name);
-    //}
-
-    //[HarmonyPrefix]
-    //[HarmonyPatch(typeof(Game1), "CreateContentManager")]
-    //static void PrefixCreateContentManager(IServiceProvider serviceProvider, string rootDirectory)
-    //{
-    //    Console.WriteLine("On PrefixCreateContentManager");
-    //}
 
     public static void VerifyAssets()
     {
