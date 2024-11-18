@@ -13,7 +13,6 @@ internal static class FileTool
 {
     public const string StardewValleyDllFileName = "StardewValley.dll";
     public const string MonoGameFrameworkFileName = "MonoGame.Framework.dll";
-    public const string StardewAssetFolderName = "Stardew Assets";
 
     static Activity activity;
     public static string ExternalFilesDir => activity.GetExternalFilesDir(null).AbsolutePath;

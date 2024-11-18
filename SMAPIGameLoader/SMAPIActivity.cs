@@ -274,8 +274,7 @@ public class SMAPIActivity : AndroidGameActivity
         SetupDisplaySettings();
         SetPaddingForMenus();
         //setup SMAPI & SGameRunner
-        //GameAssetTool.SetupLoadAssetPathHook();
-        const bool isRunSMAPI = true;
+        const bool isRunSMAPI = false;
         Console.WriteLine("isRunWith SMAPI?: " + isRunSMAPI);
         if (isRunSMAPI)
         {
@@ -298,6 +297,7 @@ public class SMAPIActivity : AndroidGameActivity
         }
         else
         {
+            GameAssetTool.SetupLoadAssetPathHook();
             var gameRunner = new GameRunner();
             GameRunner.instance = gameRunner;
         }

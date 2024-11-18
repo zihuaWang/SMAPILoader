@@ -3,6 +3,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using HarmonyLib;
 using System;
 using System.IO;
 using System.Reflection;
@@ -53,6 +54,12 @@ internal class EntryActivity : Activity
         Assembly.LoadFrom(Path.Combine(externalFilesDir, FileTool.MonoGameFrameworkFileName));
 
         base.OnCreate(savedInstanceState);
+
+        //setup harmony patcher
+        var harmony = new Harmony("SMAPIGameLoader");
+        harmony.PatchAll();
+
+
         LaunchSMAPIActivity();
     }
     void LaunchSMAPIActivity()

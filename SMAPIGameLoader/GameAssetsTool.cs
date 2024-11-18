@@ -1,30 +1,63 @@
-﻿using HarmonyLib;
+﻿
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using StardewValley;
 using System;
 using System.IO;
 using System.IO.Compression;
+using HarmonyLib;
 
 namespace SMAPIGameLoader;
 
 [HarmonyPatch]
-internal static class GameAssetTool
+static class GameAssetTool
 {
-    static Harmony harmony;
     public static void SetupLoadAssetPathHook()
     {
-        harmony = new(nameof(GameAssetTool));
-        harmony.PatchAll();
         Console.WriteLine("done harmony patch all");
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(TitleContainer), nameof(TitleContainer.OpenStream))]
-    static void PrefixOpenStream(string name)
+    static bool PrefixOpenStream(ref Stream __result, string name)
     {
-        Console.WriteLine("Prefix try open stream: " + name);
+        __result = FixOpenStream(name);
+        return false;
     }
+    public const string StardewAssetFolderName = "Stardew Assets";
+    static string _gameAssetDir = null;
+    static string GetGameAssetsDir
+    {
+        get
+        {
+            if (_gameAssetDir == null)
+                _gameAssetDir = Path.Combine(FileTool.ExternalFilesDir, StardewAssetFolderName);
+            return _gameAssetDir;
+        }
+    }
+    static Stream FixOpenStream(string assetName)
+    {
+        try
+        {
+            assetName = assetName.Replace("//", "/"); //safePath
+            assetName = assetName.Replace("\\", "/"); //safePath
+            var rootDirectory = GetGameAssetsDir;
+            string assetAbsolutePath = Path.Combine(rootDirectory, assetName);
+            return File.OpenRead(assetAbsolutePath);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    //[HarmonyPrefix]
+    //[HarmonyPatch(typeof(GameAssetTool), nameof(VerifyAssets))]
+    //static void PrefixVerifyAssets()
+    //{
+    //    Console.WriteLine("on prefix verify asset");
+    //}
     //[HarmonyPrefix]
     //[HarmonyPatch(typeof(ContentManager), "OpenStream")]
     //static void Prefix_CMOpenStream(string name)
@@ -47,7 +80,7 @@ internal static class GameAssetTool
         using (ZipArchive apkArchive = new ZipArchive(apkFileStream, ZipArchiveMode.Read))
         {
             //Console.WriteLine("Contents of APK:");
-            var externalAssetsDir = Path.Combine(FileTool.ExternalFilesDir, FileTool.StardewAssetFolderName);
+            var externalAssetsDir = Path.Combine(FileTool.ExternalFilesDir, StardewAssetFolderName);
             foreach (ZipArchiveEntry entry in apkArchive.Entries)
             {
                 if (entry.FullName.StartsWith("assets/Content") == false)

@@ -6,23 +6,6 @@ using System;
 
 namespace TestGameWithMonoMod
 {
-    [HarmonyPatch]
-    internal static class GameAssetTool
-    {
-        static Harmony harmony;
-        public static void SetupLoadAssetPath()
-        {
-            harmony = new(nameof(GameAssetTool));
-            harmony.PatchAll();
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(TitleContainer), nameof(TitleContainer.OpenStream))]
-        static void PrefixOpenStream(string name)
-        {
-            Console.WriteLine("refix openStream: " + name);
-        }
-    }
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -63,10 +46,35 @@ namespace TestGameWithMonoMod
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            YoooProtected(); //bug here if protected method
+            YoooInternal();
+            YoooPrivate();
 
-            // TODO: Add your drawing code here
+            //base.Draw(gameTime); //bug here
+        }
 
-            base.Draw(gameTime);
+        internal void YoooInternal() { }
+        private void YoooPrivate() { }
+        protected void YoooProtected() { }
+
+    }
+    [HarmonyPatch]
+    public static class GameAssetTool
+    {
+        static Harmony harmony;
+        public static void SetupLoadAssetPath()
+        {
+            harmony = new(nameof(GameAssetTool));
+            Harmony.DEBUG = true;
+            harmony.PatchAll();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Game1), "Draw")]
+        public static void Draw(Game1 __instance, GameTime gameTime)
+        {
+            Console.WriteLine("prefix draw: ");
         }
     }
+
 }

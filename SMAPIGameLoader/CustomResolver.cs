@@ -3,6 +3,7 @@ using Mono.Cecil;
 
 namespace SMAPIGameLoader;
 
+
 internal class CustomResolver : BaseAssemblyResolver
 {
     private DefaultAssemblyResolver _defaultResolver;
