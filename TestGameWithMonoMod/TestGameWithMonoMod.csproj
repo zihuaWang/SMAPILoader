@@ -12,13 +12,12 @@
     <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
-    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\MonoMod Android\Harmony-Android\Harmony\bin\ReleaseThin\net8.0\0Harmony.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\..\..\Apks Latest File\assemblies\out\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="MonoMod.Backports">
       <HintPath>..\..\..\..\MonoMod Android\MonoMod-Android\artifacts\bin\MonoMod.RuntimeDetour\debug_net8.0\MonoMod.Backports.dll</HintPath>
