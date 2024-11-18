@@ -49,20 +49,23 @@ internal class EntryActivity : Activity
 
     protected override void OnCreate(Bundle savedInstanceState)
     {
-        //load manual dependencies for game
-        var externalFilesDir = GetExternalFilesDir(null).AbsolutePath;
-        Assembly.LoadFrom(Path.Combine(externalFilesDir, FileTool.MonoGameFrameworkFileName));
-
         base.OnCreate(savedInstanceState);
+
+        //clone game assets
+        GameAssetManager.VerifyAssets();
+        GameAssemblyManager.VerifyAssemblies();
+
+        //load manual dependency game engine
+        GameAssemblyManager.LoadAssembly(GameAssemblyManager.MonoGameFrameworkDllFileName);
 
         //setup harmony patcher
         var harmony = new Harmony("SMAPIGameLoader");
         harmony.PatchAll();
 
 
-        LaunchSMAPIActivity();
+        LaunchGameActivity();
     }
-    void LaunchSMAPIActivity()
+    void LaunchGameActivity()
     {
         Intent intent = new Intent(this, typeof(SMAPIActivity));
         StartActivity(intent);

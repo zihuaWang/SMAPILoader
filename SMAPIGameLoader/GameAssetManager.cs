@@ -10,7 +10,7 @@ using HarmonyLib;
 namespace SMAPIGameLoader;
 
 [HarmonyPatch]
-static class GameAssetTool
+static class GameAssetManager
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(TitleContainer), nameof(TitleContainer.OpenStream))]

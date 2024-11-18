@@ -273,16 +273,19 @@ namespace Xamarin.Android.AssemblyStore
                     continue;
                 }
 
-                using (var stream = new MemoryStream())
+                using var stream = new MemoryStream();
+                using var entryStream = entry.Open();
+                entryStream.CopyTo(stream);
+                entryStream.Close();
+                stream.Seek(0, SeekOrigin.Begin);
+
+                if (entry.FullName.EndsWith(".blob", StringComparison.Ordinal))
                 {
-                    if (entry.FullName.EndsWith(".blob", StringComparison.Ordinal))
-                    {
-                        AddStore(new AssemblyStoreReader(stream, GetStoreArch(entry.FullName), keepStoreInMemory));
-                    }
-                    else if (entry.FullName.EndsWith(".manifest", StringComparison.Ordinal))
-                    {
-                        manifest = new AssemblyStoreManifestReader(stream);
-                    }
+                    AddStore(new AssemblyStoreReader(stream, GetStoreArch(entry.FullName), keepStoreInMemory));
+                }
+                else if (entry.FullName.EndsWith(".manifest", StringComparison.Ordinal))
+                {
+                    manifest = new AssemblyStoreManifestReader(stream);
                 }
             }
         }

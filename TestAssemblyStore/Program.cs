@@ -8,7 +8,8 @@ internal class Program
         string outputDir = Path.Combine(assembliesFolderPath, "output-console-app");
         Directory.CreateDirectory(outputDir);
         var blobPath = Path.Combine(assembliesFolderPath, "assemblies.blob");
-        var asmStore = new AssemblyStoreExplorer(blobPath, keepStoreInMemory: true);
+        var apkPath = @"C:\Users\narat\Desktop\Stardew Valley Android\Apks Latest File\base.apk";
+        var asmStore = new AssemblyStoreExplorer(apkPath, keepStoreInMemory: true);
 
         foreach (var assembly in asmStore.Assemblies)
         {

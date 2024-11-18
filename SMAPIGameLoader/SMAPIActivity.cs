@@ -45,15 +45,12 @@ public class SMAPIActivity : AndroidGameActivity
 
     }
     public static SMAPIActivity Instance { get; private set; }
-    public static string ExternalFilesDir => Instance.ApplicationContext.GetExternalFilesDir(null).AbsolutePath;
 
     Bundle currentBundle;
-    public string getStardewDllFilePath => ExternalFilesDir + "/StardewValley.dll";
     protected override void OnCreate(Bundle bundle)
     {
         Instance = this;
         currentBundle = bundle;
-        FileTool.Init(this);
         if (!ApkTool.IsInstalled)
         {
             Finish();
@@ -62,29 +59,23 @@ public class SMAPIActivity : AndroidGameActivity
 
         LaunchGame();
     }
-    void PrepareDll()
+    void PrepareAssemblies()
     {
-        GameDLLTool.VerifyDLL();
-        //fix load stardew valley assembly first & prevent error StardewValley.dll file not found
-        var stardewDllFilePath = ExternalFilesDir + "/StardewValley.dll";
+        //patch rewrite
+        var stardewDllFilePath = GameAssemblyManager.StardewValleyFilePath;
         MainActivityRewriter.Rewrite(stardewDllFilePath, out var isRewrite);
-        if (isRewrite)
-        {
-            //exit app & new load dll again
-            Finish();
-        }
-        Console.WriteLine("done setup dll references");
-        //fix bug can't load or assembly 
-        Assembly.LoadFrom(getStardewDllFilePath);
+        //load dependencies with manual
+        Assembly.LoadFrom(stardewDllFilePath);
+    }
+    void PrepareAssets()
+    {
     }
     //Assembly stardewAssembly;
     void LaunchGame()
     {
-        //prepare references
-        PrepareDll();
-
-        //copy game content assets
-        GameAssetTool.VerifyAssets();
+        //prepare game assets
+        PrepareAssemblies();
+        PrepareAssets();
 
         //setup Activity
         IntegrateStardewMainActivity();
@@ -99,32 +90,20 @@ public class SMAPIActivity : AndroidGameActivity
         Console.WriteLine("done setup MainActivity.instance with: " + instance_Field.GetValue(null));
 
     }
-    static string[] _dependenciesDirectorySearch;
-    public static string[] GetDependenciesDirectorySearch
-    {
-        get
-        {
-            if (_dependenciesDirectorySearch == null)
-            {
-                _dependenciesDirectorySearch = [
-                       ExternalFilesDir,
-                ];
-            }
-            return _dependenciesDirectorySearch;
-        }
-    }
     static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
     {
         Console.WriteLine("try resolve assembly name: " + args.Name);
         //manual load at external files dir
-        string assemblyName = new AssemblyName(args.Name).Name;
-        var dllFileName = assemblyName + ".dll";
-        foreach (var dir in GetDependenciesDirectorySearch)
+        var dllFileName = new AssemblyName(args.Name).Name + ".dll";
+        string[] searchDirs = [
+            FileTool.ExternalFilesDir,
+        ];
+
+        foreach (var dir in searchDirs)
         {
             var asm = Assembly.LoadFrom(Path.Combine(dir, dllFileName));
             if (asm != null)
                 return asm;
-
         }
         Console.WriteLine("error can't resolve asm: " + args.Name);
         return null;
@@ -351,7 +330,7 @@ public class SMAPIActivity : AndroidGameActivity
         Console.WriteLine("isRunWith SMAPI?: " + isRunSMAPI);
         if (isRunSMAPI)
         {
-            var smapi = Assembly.LoadFrom(ExternalFilesDir + "/StardewModdingAPI.dll");
+            var smapi = Assembly.LoadFrom(FileTool.ExternalFilesDir + "/StardewModdingAPI.dll");
             Console.WriteLine(smapi);
             var programType = smapi.GetType("StardewModdingAPI.Program");
             Console.WriteLine(programType);

@@ -4,15 +4,15 @@ using Mono.Cecil;
 namespace SMAPIGameLoader;
 
 
-internal class CustomResolver : BaseAssemblyResolver
+internal class StardewAssembliesResolver : BaseAssemblyResolver
 {
     private DefaultAssemblyResolver _defaultResolver;
 
-    public CustomResolver()
+    public StardewAssembliesResolver()
     {
         _defaultResolver = new DefaultAssemblyResolver();
-        foreach (var dirPath in SMAPIActivity.GetDependenciesDirectorySearch)
-            _defaultResolver.AddSearchDirectory(dirPath);
+        _defaultResolver.AddSearchDirectory(GameAssemblyManager.AssembliesDirPath);
+        _defaultResolver.AddSearchDirectory(FileTool.ExternalFilesDir);
     }
 
     public override AssemblyDefinition Resolve(AssemblyNameReference name)

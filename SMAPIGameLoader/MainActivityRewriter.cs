@@ -13,7 +13,7 @@ internal static class MainActivityRewriter
     }
     public static ReaderParameters MonoCecilReaderConfig = new()
     {
-        AssemblyResolver = new CustomResolver(),
+        AssemblyResolver = new StardewAssembliesResolver(),
     };
     public static ModuleDefinition ReadModule(string filePath)
     {
@@ -23,7 +23,6 @@ internal static class MainActivityRewriter
     {
         return ModuleDefinition.ReadModule(stream, MonoCecilReaderConfig);
     }
-    public static string ExternalFilesDir => SMAPIActivity.ExternalFilesDir;
     public static void Rewrite(string stardewDllFilePath, out bool isRewrite)
     {
         isRewrite = false;

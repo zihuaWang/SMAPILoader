@@ -20,6 +20,9 @@
 		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\AssemblyStore\AssemblyStore.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 		<Reference Include="0Harmony">
 		  <HintPath>..\..\..\..\MonoMod Android\Harmony-Android\Harmony\bin\ReleaseThin\net8.0\0Harmony.dll</HintPath>
 		  <Private>True</Private>
