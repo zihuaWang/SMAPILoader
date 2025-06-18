@@ -1,0 +1,53 @@
+name: SMAPI Android Build
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # 允许手动触发构建
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Install Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        ndk-version: '23.2.8568313'
+        cmake-version: '3.22.1'
+        
+    - name: Build SMAPI
+      run: |
+        # 定位到Android项目目录
+        cd src/SMAPI.Android
+        
+        # 修改验证逻辑 - 自动打补丁
+        
+        # 构建APK
+        dotnet publish -c Release -f net6.0-android -p:AndroidPackageFormat=apk
+        
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: smapi-android
+        path: src/SMAPI.Android/bin/Release/net6.0-android/publish/*-Signed.apk
+        
+    - name: Create download page
+      run: |
+        echo "Build completed at $(date)" > build-info.html
+        echo "<a href='https://nightly.link/${{ github.repository }}/actions/artifacts/${{ github.run_id }}.zip'>Download APK</a>" >> build-info.html
+      working-directory: src/SMAPI.Android/bin/Release/net6.0-android/publish/
+      
+    - name: Upload build info
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-info
+        path: src/SMAPI.Android/bin/Release/net6.0-android/publish/build-info.html
