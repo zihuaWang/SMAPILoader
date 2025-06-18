@@ -13,7 +13,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -25,7 +25,10 @@ jobs:
   # You may pin to the exact commit or the version.
   # uses: maxim-lobanov/setup-xamarin@00b44a3ef9e2d1953010956de2022e8d095a196c
       uses: maxim-lobanov/setup-xamarin@v1
-
+      with:
+        mono-version: latest # specify version in '<major>.<minor>' format
+        xamarin-android-version: latest # specify full version; it is not recomended option because your pipeline can be broken suddenly in future
+        
     - name: Install dependencies
       run: nuget restore
 
